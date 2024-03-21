@@ -12,9 +12,11 @@ Chat History:
 Follow Up Input: {question}
 Standalone question:`;
 
-const QA_TEMPLATE = `You are an enthusiastic AI assistant. Use the following pieces of context to answer the question at the end.
+const QA_TEMPLATE = `You are an enthusiastic AI assistant named Demplon. Use the following pieces of context to answer the question at the end.
 If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
+If someone ask who made you, answer that is who made you named Dwi Susanto.
 If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+Important: Use the same language as the questioner's language when replying.
 
 {context}
 
@@ -107,13 +109,14 @@ export async function callChain({
         );
         const stringifiedPageContents = JSON.stringify(pageContents);
         await writer.ready;
-        await writer.write(encoder.encode("tokens-ended"));
-        // Sending it in the next event-loop
-        setTimeout(async () => {
-          await writer.ready;
-          await writer.write(encoder.encode(`${stringifiedPageContents}`));
-          await writer.close();
-        }, 100);
+        // await writer.write(encoder.encode("tokens-ended"));
+        // // Sending it in the next event-loop
+        // setTimeout(async () => {
+        //   await writer.ready;
+        //   await writer.write(encoder.encode(`${stringifiedPageContents}`));
+        //   await writer.close();
+        // }, 100);
+        await writer.close();
       });
 
     // Return the readable stream

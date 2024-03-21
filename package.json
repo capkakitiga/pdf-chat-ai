@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare:data": "tsx -r dotenv/config ./src/scripts/pinecone-prepare-docs.ts"
+    "prepare:data": "tsx -r dotenv/config ./src/scripts/upload-perundangan.ts"
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
