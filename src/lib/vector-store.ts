@@ -2,6 +2,8 @@ import { env } from "./config";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { PineconeClient } from "@pinecone-database/pinecone";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { GoogleVertexAIEmbeddings } from "@langchain/community/embeddings/googlevertexai";
 
 export async function pineconeEmbedAndStore(
   client: PineconeClient,
@@ -11,7 +13,7 @@ export async function pineconeEmbedAndStore(
 ) {
   /*create and store the embeddings in the vectorStore*/
   try {
-    const embeddings = new OpenAIEmbeddings();
+    const embeddings:any = new GoogleVertexAIEmbeddings();
     const index = client.Index(env.PINECONE_INDEX_NAME);
 
     await PineconeStore.fromDocuments(docs, embeddings, {
@@ -27,13 +29,13 @@ export async function pineconeEmbedAndStore(
 
 export async function getVectorStore(client: PineconeClient) {
   try {
-    const embeddings = new OpenAIEmbeddings();
+    const embeddings:any = new GoogleVertexAIEmbeddings();
     const index = client.Index(env.PINECONE_INDEX_NAME);
 
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
       pineconeIndex: index,
       textKey: "text",
-      namespace: 'regulations',
+      namespace: 'eprosedur-guidelines',
     });
 
     return vectorStore;

@@ -32,7 +32,7 @@ const reqHeaders = {
     const pineconeClient = await getPineconeClient();
 
     const proceduresRaw = await fetch(
-      "https://demplon.pupuk-kujang.co.id/admin/api/dimas/peraturan/regulations/",
+      "https://demplon.pupuk-kujang.co.id/admin/api/dimas/eprosedur/procedures/?categoryid[]=3",
       {
         headers: reqHeaders,
       }
@@ -42,7 +42,7 @@ const reqHeaders = {
 
     for (let x in procedures) {
       const procedureRaw = await fetch(
-        "https://demplon.pupuk-kujang.co.id/admin/api/dimas/peraturan/regulations/" +
+        "http://localhost:2300/dimas/eprosedur/procedures/" +
           procedures[x].id +
           "/detail/",
         {
@@ -51,19 +51,22 @@ const reqHeaders = {
       );
     
       const procedure = await procedureRaw.json();
+
+      console.log(procedure);
     
-      if (procedure?.file_url) {
-        const blob=await fetch(procedure?.file_url);
+      if (procedure?.file?.file_url) {
+        const blob=await fetch(procedure.file.file_url);
         const blobbb=await blob.blob();
         let docs = await getChunkedDocsFromPDF(blobbb);
 
         docs=docs.map((val,i)=>{
-          val.metadata.regulation=procedure
+          val.metadata.guideline=procedure
+          val.pageContent= val.pageContent.replace(/(?:\r\n|\r|\n)/g, ' ').replace(/\s\s+/g, ' ');;
           return val
         })
 
-        await pineconeEmbedAndStore(pineconeClient, docs,'regulations');
-        console.log(procedure);
+        console.log('aing')
+        await pineconeEmbedAndStore(pineconeClient, docs,'eprosedur-guidelines');
       }
     }
 

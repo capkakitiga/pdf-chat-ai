@@ -4,6 +4,7 @@ import { ConversationalRetrievalQAChain } from "langchain/chains";
 import { getVectorStore } from "./vector-store";
 import { getPineconeClient } from "./pinecone-client";
 import { formatChatHistory } from "./utils";
+import { ChatGoogleVertexAI } from "@langchain/community/chat_models/googlevertexai";
 
 const CONDENSE_TEMPLATE = `Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
@@ -33,14 +34,13 @@ function makeChain(
   // Create a TransformStream for writing the response as the tokens as generated
   // const writer = transformStream.writable.getWriter();
 
-  const streamingModel = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo",
-    streaming: true,
+  const streamingModel = new ChatGoogleVertexAI({
     temperature: 0,
     verbose: true,
     callbacks: [
       {
         async handleLLMNewToken(token) {
+          console.log('aing')
           await writer.ready;
           await writer.write(encoder.encode(`${token}`));
         },
@@ -50,21 +50,20 @@ function makeChain(
       },
     ],
   });
-  const nonStreamingModel = new ChatOpenAI({
-    modelName: "gpt-3.5-turbo",
+  const nonStreamingModel = new ChatGoogleVertexAI({
     verbose: true,
     temperature: 0,
   });
 
   const chain = ConversationalRetrievalQAChain.fromLLM(
-    streamingModel,
+    streamingModel as any,
     vectorstore.asRetriever(),
     {
       qaTemplate: QA_TEMPLATE,
       questionGeneratorTemplate: CONDENSE_TEMPLATE,
       returnSourceDocuments: true, //default 4
       questionGeneratorChainOptions: {
-        llm: nonStreamingModel,
+        llm: nonStreamingModel as any,
       },
     }
   );
@@ -102,6 +101,8 @@ export async function callChain({
         chat_history: formattedChatHistory,
       })
       .then(async (res) => {
+        console.log('aing');
+        console.log(res)
         const sourceDocuments = res?.sourceDocuments;
         const firstTwoDocuments = sourceDocuments.slice(0, 2);
         const pageContents = firstTwoDocuments.map(
@@ -109,6 +110,7 @@ export async function callChain({
         );
         const stringifiedPageContents = JSON.stringify(pageContents);
         await writer.ready;
+        await writer.write(encoder.encode(`${res.text}`));
         // await writer.write(encoder.encode("tokens-ended"));
         // // Sending it in the next event-loop
         // setTimeout(async () => {

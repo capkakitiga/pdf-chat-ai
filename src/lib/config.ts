@@ -2,6 +2,8 @@ import z from "zod";
 
 const envSchema = z.object({
   OPENAI_API_KEY: z.string().trim().min(1),
+  GOOGLE_API_KEY: z.string().trim().min(1),
+  GOOGLE_APPLICATION_CREDENTIALS: z.string().trim().min(1),
   PINECONE_API_KEY: z.string().trim().min(1),
   PINECONE_ENVIRONMENT: z.string().trim().min(1),
   PINECONE_INDEX_NAME: z.string().trim().min(1),
