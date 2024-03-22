@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
   }
 
 
-  c
   try {
     const transformStream = new TransformStream();
     const readableStream = callChain({
