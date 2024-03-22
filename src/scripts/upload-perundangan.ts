@@ -32,7 +32,7 @@ const reqHeaders = {
     const pineconeClient = await getPineconeClient();
 
     const proceduresRaw = await fetch(
-      "https://demplon.pupuk-kujang.co.id/admin/api/dimas/eprosedur/procedures/?categoryid[]=3",
+      "https://demplon.pupuk-kujang.co.id/admin/api/dimas/eprosedur/procedures/?categoryid[]=1",
       {
         headers: reqHeaders,
       }
@@ -60,13 +60,13 @@ const reqHeaders = {
         let docs = await getChunkedDocsFromPDF(blobbb);
 
         docs=docs.map((val,i)=>{
-          val.metadata.guideline=procedure
+          val.metadata.procedure=procedure
           val.pageContent= val.pageContent.replace(/(?:\r\n|\r|\n)/g, ' ').replace(/\s\s+/g, ' ');;
           return val
         })
 
         console.log('aing')
-        await pineconeEmbedAndStore(pineconeClient, docs,'eprosedur-guidelines');
+        await pineconeEmbedAndStore(pineconeClient, docs,'eprosedur-procedures');
       }
     }
 
